@@ -1,0 +1,519 @@
+import pygame # This line imports all available pygame modules into the pygame package 
+
+import sys # This imports the sys module which can access command line arguments and then iterate over these arguments 
+
+import random # This line loads all random modules that contain a number of random number generation functions 
+
+ 
+
+# Initialize Pygame 
+
+pygame.init() 
+
+ 
+
+# Constants 
+
+WIDTH, HEIGHT = 800, 600 
+
+FPS = 60 
+
+PLAYER_SIZE = 50 
+
+ENEMY_SIZE = 50 
+
+WHITE = (255, 255, 255) 
+
+RED = (255, 0, 0) 
+
+GREEN = (0, 255, 0) 
+
+ 
+
+# Load player and enemy images 
+
+player_image = pygame.image.load("player_image.png")  # Replace "player_image.png" with your player image file 
+
+enemy_image = pygame.image.load("enemy_image.png")  # Replace "enemy_image.png" with your enemy image file 
+
+ 
+
+# Resize images to match player and enemy sizes 
+
+player_image = pygame.transform.scale(player_image, (PLAYER_SIZE, PLAYER_SIZE)) 
+
+enemy_image = pygame.transform.scale(enemy_image, (ENEMY_SIZE, ENEMY_SIZE)) 
+
+ 
+
+# Load background image 
+
+background_image = pygame.image.load("background_image.png")  # Replace "background_image.png" with your background image file 
+
+background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT)) 
+
+ 
+
+# Initialize screen 
+
+screen = pygame.display.set_mode((WIDTH, HEIGHT)) 
+
+pygame.display.set_caption("Super Mario Dodge") 
+
+ 
+
+# Clock to control the frame rate 
+
+clock = pygame.time.Clock() 
+
+ 
+
+# Function to draw the player 
+
+def draw_player(x, y): 
+
+    screen.blit(player_image, (x, y)) 
+
+ 
+
+# Function to draw an enemy 
+
+def draw_enemy(x, y): 
+
+    screen.blit(enemy_image, (x, y)) 
+
+ 
+
+# Function to display the username input 
+
+def get_username(): 
+
+    input_font = pygame.font.Font(None, 36) 
+
+    username_font = pygame.font.Font(None, 48) 
+
+    input_text = "" 
+
+    input_active = True 
+
+ 
+
+    while True: 
+
+        for event in pygame.event.get(): 
+
+            if event.type == pygame.QUIT: 
+
+                pygame.quit() 
+
+                sys.exit() 
+
+            elif event.type == pygame.KEYDOWN: 
+
+                if event.key == pygame.K_RETURN: 
+
+                    return input_text 
+
+                elif event.key == pygame.K_BACKSPACE: 
+
+                    input_text = input_text[:-1] 
+
+                else: 
+
+                    input_text += event.unicode 
+
+ 
+
+        screen.fill((0, 0, 0)) 
+
+        input_surface = input_font.render("Enter your username: " + input_text, True, WHITE) 
+
+        input_rect = input_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50)) 
+
+        screen.blit(input_surface, input_rect) 
+
+ 
+
+        pygame.display.flip() 
+
+        clock.tick(FPS) 
+
+ 
+
+# Function to display game over screen 
+
+def game_over_screen(username): 
+
+    screen.fill((0, 0, 0)) 
+
+    font = pygame.font.Font(None, 74) 
+
+    game_over_text = font.render("Game Over", True, WHITE) 
+
+    username_text = font.render("Username: {}".format(username), True, WHITE) 
+
+    score_text = font.render("Score: {}".format(score), True, WHITE) 
+
+    restart_text = font.render("Press R to restart", True, WHITE) 
+
+    exit_text = font.render("Press E to exit", True, WHITE) 
+
+ 
+
+    screen.blit(game_over_text, (WIDTH // 2 - 200, HEIGHT // 2 - 150)) 
+
+    screen.blit(username_text, (WIDTH // 2 - 150, HEIGHT // 2 - 50)) 
+
+    screen.blit(score_text, (WIDTH // 2 - 150, HEIGHT // 2)) 
+
+    screen.blit(restart_text, (WIDTH // 2 - 200, HEIGHT // 2 + 50)) 
+
+    screen.blit(exit_text, (WIDTH // 2 - 150, HEIGHT // 2 + 100)) 
+
+ 
+
+    pygame.display.flip() 
+
+ 
+
+    while True: 
+
+        for event in pygame.event.get(): 
+
+            if event.type == pygame.QUIT: 
+
+                pygame.quit() 
+
+                sys.exit() 
+
+            if event.type == pygame.KEYDOWN: 
+
+                if event.key == pygame.K_r: 
+
+                    return True  # Restart 
+
+                elif event.key == pygame.K_e: 
+
+                    pygame.quit() 
+
+                    sys.exit()  # Exit 
+
+ 
+
+# Function to display well done screen 
+
+def well_done_screen(username): 
+
+    screen.fill((0, 0, 0)) 
+
+    font = pygame.font.Font(None, 74) 
+
+    well_done_text = font.render("Well Done!", True, GREEN) 
+
+    username_text = font.render("Username: {}".format(username), True, WHITE) 
+
+    score_text = font.render("Score: {}".format(score), True, WHITE) 
+
+    restart_text = font.render("Press R to restart", True, WHITE) 
+
+    exit_text = font.render("Press E to exit", True, WHITE) 
+
+ 
+
+    screen.blit(well_done_text, (WIDTH // 2 - 200, HEIGHT // 2 - 150)) 
+
+    screen.blit(username_text, (WIDTH // 2 - 150, HEIGHT // 2 - 50)) 
+
+    screen.blit(score_text, (WIDTH // 2 - 150, HEIGHT // 2)) 
+
+    screen.blit(restart_text, (WIDTH // 2 - 200, HEIGHT // 2 + 50)) 
+
+    screen.blit(exit_text, (WIDTH // 2 - 150, HEIGHT // 2 + 100)) 
+
+ 
+
+    pygame.display.flip() 
+
+ 
+
+    while True: 
+
+        for event in pygame.event.get(): 
+
+            if event.type == pygame.QUIT: 
+
+                pygame.quit() 
+
+                sys.exit() 
+
+            if event.type == pygame.KEYDOWN: 
+
+                if event.key == pygame.K_r: 
+
+                    return True  # Restart 
+
+                elif event.key == pygame.K_e: 
+
+                    pygame.quit() 
+
+                    sys.exit()  # Exit 
+
+ 
+
+# Function to display pause message 
+
+def pause_message(): 
+
+    font = pygame.font.Font(None, 36) 
+
+    pause_text = font.render("Game Paused - Press R to resume", True, WHITE) 
+
+    screen.blit(pause_text, (WIDTH // 2 - 200, HEIGHT // 2)) 
+
+    pygame.display.flip() 
+
+ 
+
+# Get the username from the player 
+
+username = get_username() 
+
+ 
+
+# Player 
+
+player_x = WIDTH // 2 - PLAYER_SIZE // 2 
+
+player_y = HEIGHT - PLAYER_SIZE - 10 
+
+player_speed = 5 
+
+jumping = False 
+
+jump_count = 10 
+
+ 
+
+# Enemy 
+
+enemy_x = WIDTH 
+
+enemy_y = HEIGHT - ENEMY_SIZE - 10 
+
+enemy_speed = 5 
+
+ 
+
+# Score 
+
+score = 0 
+
+ 
+
+# Game state 
+
+game_over = False 
+
+paused = False 
+
+ 
+
+# Game loop 
+
+while True: 
+
+    for event in pygame.event.get(): 
+
+        if event.type == pygame.QUIT: 
+
+            pygame.quit() 
+
+            sys.exit() 
+
+        elif event.type == pygame.KEYDOWN: 
+
+            if event.key == pygame.K_p: 
+
+                paused = not paused  # Toggle pause state 
+
+                if paused: 
+
+                    pause_message() 
+
+ 
+
+    if not paused: 
+
+        if not game_over: 
+
+            keys = pygame.key.get_pressed() 
+
+            player_x += (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * player_speed 
+
+ 
+
+            # Jumping 
+
+            if not jumping: 
+
+                if keys[pygame.K_SPACE]: 
+
+                    jumping = True 
+
+            else: 
+
+                if jump_count >= -10: 
+
+                    neg = 1 
+
+                    if jump_count < 0: 
+
+                        neg = -1 
+
+                    player_y -= (jump_count ** 2) * 0.5 * neg 
+
+                    jump_count -= 1 
+
+                else: 
+
+                    jumping = False 
+
+                    jump_count = 10 
+
+ 
+
+            # Update enemy 
+
+            enemy_x -= enemy_speed 
+
+            if enemy_x < 0: 
+
+                enemy_x = WIDTH 
+
+                score += 1 
+
+ 
+
+            # Check for collision with enemy 
+
+            if ( 
+
+                player_x < enemy_x + ENEMY_SIZE 
+
+                and player_x + PLAYER_SIZE > enemy_x 
+
+                and player_y < enemy_y + ENEMY_SIZE 
+
+                and player_y + PLAYER_SIZE > enemy_y 
+
+            ): 
+
+                game_over = True 
+
+ 
+
+            # Draw background 
+
+            screen.blit(background_image, (0, 0)) 
+
+ 
+
+            # Draw player and enemy 
+
+            draw_player(player_x, player_y) 
+
+            draw_enemy(enemy_x, enemy_y) 
+
+ 
+
+            # Display the username and score 
+
+            font = pygame.font.Font(None, 36) 
+
+            if score < 20: 
+
+                score_text = font.render("Score: {}".format(score), True, WHITE) 
+
+            else: 
+
+                score_text = font.render("Score: {}".format(score), True, GREEN) 
+
+ 
+
+            username_text = font.render("Username: {}".format(username), True, WHITE) 
+
+ 
+
+            screen.blit(score_text, (10, 10)) 
+
+            screen.blit(username_text, (10, 50)) 
+
+ 
+
+            # Update the display 
+
+            pygame.display.flip() 
+
+ 
+
+            # Cap the frame rate 
+
+            clock.tick(FPS) 
+
+        else: 
+
+            if score < 20: 
+
+                restart = game_over_screen(username) 
+
+            else: 
+
+                restart = well_done_screen(username) 
+
+ 
+
+            if restart: 
+
+                player_x = WIDTH // 2 - PLAYER_SIZE // 2 
+
+                player_y = HEIGHT - PLAYER_SIZE - 10 
+
+                enemy_x = WIDTH 
+
+                enemy_y = HEIGHT - ENEMY_SIZE - 10 
+
+                score = 0 
+
+                game_over = False 
+
+                paused = False 
+
+                username = get_username()  # Get a new username for the next game 
+
+            else: 
+
+                pygame.quit() 
+
+                sys.exit() 
+
+    else: 
+
+        for event in pygame.event.get(): 
+
+            if event.type == pygame.KEYDOWN: 
+
+                if event.key == pygame.K_r: 
+
+                    paused = False  # Resume 
+
+                    screen.fill((0, 0, 0)) 
+
+                    pygame.display.flip() 
+
+                    break 
+
+                elif event.key == pygame.K_e: 
+
+                    pygame.quit() 
+
+                    sys.exit() 
